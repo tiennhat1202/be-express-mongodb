@@ -6,16 +6,35 @@ const {
   addProduct,
   putProductById,
   deleteProductById,
-} = require("../controller/product.controller");
+} = require("../controllers/product.controller");
+const {
+  isAuthenticatedUser,
+  authorizeRoles,
+} = require("../middleware/authMiddleware");
 
-router.post("/add/", addProduct);
+router.post("/add/", isAuthenticatedUser, authorizeRoles("admin"), addProduct);
 
-router.get("/", getProducts);
+router.get("/", isAuthenticatedUser, authorizeRoles("admin"), getProducts);
 
-router.get("/:id", getProductById);
+router.get(
+  "/:id",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  getProductById
+);
 
-router.put("/:id", putProductById);
+router.put(
+  "/:id",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  putProductById
+);
 
-router.delete("/:id", deleteProductById);
+router.delete(
+  "/:id",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  deleteProductById
+);
 
 module.exports = router;

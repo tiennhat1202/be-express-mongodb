@@ -28,8 +28,8 @@ app.get("/", (req, res) => {
   res.send("API");
 });
 //routes
-app.use("/api/v1/products", productRoute);
-app.use("/api/v1/users", userRoute);
+app.use("/api/v1/", productRoute);
+app.use("/api/v1/", userRoute);
 
 const server = app.listen(process.env.PORT, () =>
   console.log(`Server working with port: ${process.env.PORT}`)

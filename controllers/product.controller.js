@@ -3,7 +3,7 @@ const ErrorHandler = require("../utils/errorUtils");
 const catchAsyncError = require("../middleware/catchAsyncError");
 const ApiFeatures = require("../utils/apiFeatures");
 
-const getProducts = catchAsyncError(async (req, res, next) => {
+exports.getProducts = catchAsyncError(async (req, res, next) => {
   const resultPerPage = 5;
   const productCount = await Product.countDocuments();
 
@@ -15,7 +15,7 @@ const getProducts = catchAsyncError(async (req, res, next) => {
   res.status(200).json({ success: true, products, productCount });
 });
 
-const getProductById = catchAsyncError(async (req, res, next) => {
+exports.getProductById = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   const product = await Product.findById(id);
   if (!product) {
@@ -25,7 +25,7 @@ const getProductById = catchAsyncError(async (req, res, next) => {
 });
 
 //Create a product
-const addProduct = catchAsyncError(async (req, res, next) => {
+exports.addProduct = catchAsyncError(async (req, res, next) => {
   req.body.user = req.user.id;
 
   const product = await Product.create(req.body);
@@ -36,7 +36,7 @@ const addProduct = catchAsyncError(async (req, res, next) => {
 });
 
 // Update a product
-const putProductById = catchAsyncError(async (req, res, next) => {
+exports.putProductById = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   const product = await Product.findById(id);
   if (!product) {
@@ -55,7 +55,7 @@ const putProductById = catchAsyncError(async (req, res, next) => {
 });
 
 //Delete a product
-const deleteProductById = catchAsyncError(async (req, res, next) => {
+exports.deleteProductById = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   const product = await Product.findByIdAndDelete(id);
   if (!product) {
@@ -65,11 +65,3 @@ const deleteProductById = catchAsyncError(async (req, res, next) => {
     .status(200)
     .json({ success: true, message: "Product delete successfully" });
 });
-
-module.exports = {
-  getProducts,
-  getProductById,
-  addProduct,
-  putProductById,
-  deleteProductById,
-};

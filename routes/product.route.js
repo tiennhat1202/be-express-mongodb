@@ -12,26 +12,36 @@ const {
   authorizeRoles,
 } = require("../middleware/authMiddleware");
 
-router.post("/add/", isAuthenticatedUser, authorizeRoles("admin"), addProduct);
-
-router.get("/", isAuthenticatedUser, authorizeRoles("admin"), getProducts);
+router.post(
+  "/admin/product-add",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  addProduct
+);
 
 router.get(
-  "/:id",
+  "/admin/product-getall",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  getProducts
+);
+
+router.get(
+  "/admin/product-getid/:id",
   isAuthenticatedUser,
   authorizeRoles("admin"),
   getProductById
 );
 
 router.put(
-  "/:id",
+  "/admin/product-update/:id",
   isAuthenticatedUser,
   authorizeRoles("admin"),
   putProductById
 );
 
 router.delete(
-  "/:id",
+  "/admin/product-del/:id",
   isAuthenticatedUser,
   authorizeRoles("admin"),
   deleteProductById

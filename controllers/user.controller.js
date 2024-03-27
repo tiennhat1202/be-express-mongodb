@@ -5,7 +5,7 @@ const sendToken = require("../utils/jwtToken");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
 
-const registerUser = catchAsyncError(async (req, res, next) => {
+exports.registerUser = catchAsyncError(async (req, res, next) => {
   const { name, email, password } = req.body;
   const user = await User.create({
     name,
@@ -19,7 +19,7 @@ const registerUser = catchAsyncError(async (req, res, next) => {
   sendToken(user, 200, res);
 });
 
-const loginUser = catchAsyncError(async (req, res, next) => {
+exports.loginUser = catchAsyncError(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return next(new ErrorHandler("Please provide email and password", 400));
@@ -38,7 +38,7 @@ const loginUser = catchAsyncError(async (req, res, next) => {
   sendToken(user, 200, res);
 });
 
-const logoutUser = catchAsyncError(async (req, res, next) => {
+exports.logoutUser = catchAsyncError(async (req, res, next) => {
   res.cookie("token", null, {
     expires: new Date(Date.now()),
     httpOnly: true,
@@ -47,7 +47,7 @@ const logoutUser = catchAsyncError(async (req, res, next) => {
   res.status(200).json({ success: true, message: "Successfully logged out" });
 });
 
-const forgotPasswordUser = catchAsyncError(async (req, res, next) => {
+exports.forgotPasswordUser = catchAsyncError(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
     return next(new ErrorHandler("User not found!", 404));
@@ -85,7 +85,7 @@ const forgotPasswordUser = catchAsyncError(async (req, res, next) => {
   }
 });
 
-const resetPasswordUser = catchAsyncError(async (req, res, next) => {
+exports.resetPasswordUser = catchAsyncError(async (req, res, next) => {
   const resetPasswordToken = crypto
     .createHash("sha256")
     .update(req.params.token)
@@ -96,7 +96,6 @@ const resetPasswordUser = catchAsyncError(async (req, res, next) => {
     resetPasswordExpire: { $gt: Date.now() },
   });
 
-  console.log(user);
   if (!user) {
     return next(
       new ErrorHandler("Password reset token is invalid or has expired", 400)
@@ -113,10 +112,37 @@ const resetPasswordUser = catchAsyncError(async (req, res, next) => {
   sendToken(user, 200, res);
 });
 
-module.exports = {
-  registerUser,
-  loginUser,
-  logoutUser,
-  forgotPasswordUser,
-  resetPasswordUser,
-};
+exports.getUserDetails = catchAsyncError(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+  res.status(200).json({ success: true, user });
+});
+
+exports.updatePassword = catchAsyncError(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select("+password");
+
+  const isMatch = await user.comparePassword(req.body.oldPassword);
+
+  if (!isMatch) {
+    return next(new ErrorHandler("Old password is incorrect", 400));
+  }
+  if (req.body.newPassword !== req.body.confirmPassword) {
+    return next(new ErrorHandler("Password does not match", 400));
+  }
+  user.password = req.body.newPassword;
+
+  await user.save();
+  sendToken(user, 200, res);
+});
+
+exports.updateProfile = catchAsyncError(async (req, res, next) => {
+  const newUserData = {
+    name: req.body.name,
+    email: req.body.email,
+  };
+  const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+  res.status(200).json({ success: true });
+});

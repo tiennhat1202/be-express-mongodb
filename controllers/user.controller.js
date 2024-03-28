@@ -111,8 +111,8 @@ exports.resetPasswordUser = catchAsyncError(async (req, res, next) => {
   await user.save();
   sendToken(user, 200, res);
 });
-
-exports.getUserDetails = catchAsyncError(async (req, res, next) => {
+// User
+exports.getUserDetail_User = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.user.id);
   res.status(200).json({ success: true, user });
 });
@@ -145,4 +145,47 @@ exports.updateProfile = catchAsyncError(async (req, res, next) => {
     useFindAndModify: false,
   });
   res.status(200).json({ success: true });
+});
+
+//Admin
+exports.getAllUser_Admin = catchAsyncError(async (req, res, next) => {
+  const users = await User.find();
+  res.status(200).json({ success: true, users });
+});
+// Get Single User Admin
+exports.getUserDetail_Admin = catchAsyncError(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(
+      new ErrorHandler(`User does not exits with id: ${req.params.id}`, 404)
+    );
+  }
+  res.status(200).json({ success: true, user });
+});
+
+exports.updateUserRole_Admin = catchAsyncError(async (req, res, next) => {
+  const newUserData = {
+    name: req.body.name,
+    email: req.body.email,
+    role: req.body.role,
+  };
+  const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+  res.status(200).json({ success: true });
+});
+
+exports.deleteUser_Admin = catchAsyncError(async (req, res, next) => {
+  const user = await User.findByIdAndDelete(req.params.id);
+  if (!user) {
+    return next(
+      new ErrorHandler(`User does not exits with id: ${req.params.id}`, 404)
+    );
+  }
+  res
+    .status(200)
+    .json({ success: true, message: "User deleted successfully!" });
 });

@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const connectDatabase = require("./configs/database.js");
 const productRoute = require("./routes/product.route.js");
 const userRoute = require("./routes/user.route.js");
+const reviewRoute = require("./routes/review.route.js");
 const errorHandlerMiddleware = require("./middleware/errorMiddleware.js");
 
 app.use(express.json());
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 //routes
 app.use("/api/v1/", productRoute);
 app.use("/api/v1/", userRoute);
+app.use("/api/v1/", reviewRoute);
 
 const server = app.listen(process.env.PORT, () =>
   console.log(`Server working with port: ${process.env.PORT}`)

@@ -12,25 +12,15 @@ const {
   authorizeRoles,
 } = require("../middleware/authMiddleware");
 
+router.get("/admin/product-getall", getProducts);
+
+router.get("/admin/product-getid/:id", getProductById);
+
 router.post(
   "/admin/product-add",
   isAuthenticatedUser,
   authorizeRoles("admin"),
   addProduct
-);
-
-router.get(
-  "/admin/product-getall",
-  isAuthenticatedUser,
-  authorizeRoles("admin"),
-  getProducts
-);
-
-router.get(
-  "/admin/product-getid/:id",
-  isAuthenticatedUser,
-  authorizeRoles("admin"),
-  getProductById
 );
 
 router.put(

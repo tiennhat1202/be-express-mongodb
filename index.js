@@ -6,6 +6,7 @@ const connectDatabase = require("./configs/database.js");
 const productRoute = require("./routes/product.route.js");
 const userRoute = require("./routes/user.route.js");
 const reviewRoute = require("./routes/review.route.js");
+const reviewOrder = require("./routes/order.route.js");
 const errorHandlerMiddleware = require("./middleware/errorMiddleware.js");
 
 app.use(express.json());
@@ -32,6 +33,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1/", productRoute);
 app.use("/api/v1/", userRoute);
 app.use("/api/v1/", reviewRoute);
+app.use("/api/v1/", reviewOrder);
 
 const server = app.listen(process.env.PORT, () =>
   console.log(`Server working with port: ${process.env.PORT}`)
